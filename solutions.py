@@ -46,7 +46,8 @@ class Solution(abc.ABC):
 	
 
 class LinearModelSolution(Solution):
-	def __init__(self, config, num_features=5):
+	def __init__(self, config, num_features=4):
+		super().__init__()
 		self.kwargs = {
 			'config': config,
 			'num_features': num_features,
@@ -78,6 +79,7 @@ class LinearModelSolution(Solution):
 
 class PermutationInvariantSolution(Solution):
 	def __init__(self, embedding_dim=16, project_dim=32, hidden_size=8):
+		super().__init__()
 		self.kwargs = {
 			'embedding_dim': embedding_dim,
 			'project_dim': project_dim,
@@ -99,11 +101,12 @@ class PermutationInvariantSolution(Solution):
 		return new_solution
 	
 	def get_action(self, x):
-		action = self.policy(torch.from_numpy(x).to(self.datatype)).item()
+		action = self.policy(torch.from_numpy(x).to(self.datatype), self.previous_action)
+		action = action.item()
 		self.previous_action = action
 		return action
 
-	def reset_solution(self):
+	def reset(self):
 		self.policy.sensory_neuron.hidden_state_tuple = None
 		self.previous_action = 0
 

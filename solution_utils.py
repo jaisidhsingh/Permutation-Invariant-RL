@@ -1,3 +1,4 @@
+import pickle
 import torch
 import torch.nn as nn
 import numpy as np
@@ -130,11 +131,11 @@ class PermutationInvariantLayer(nn.Module):
         self.attention = AttentionBlock(
             hidden_size=self.hidden_size,
             project_dims=self.project_dim,
-            scale=False
+            scaling=False
         )
 
-        self.Q = QueryPositionalEncodings.get_encodings(
-            embedding_dim, hidden_size).float()
+        self.Q = QueryPositionalEncodings(
+            embedding_dim, hidden_size).get_encodings().float()
 
     def forward(self, x, previous_action):
         # x is the current observation of shape (5,)
@@ -192,3 +193,5 @@ class PermutationInvariantPolicyNetwork(nn.Module):
         prediction = torch.tanh((self.projection(latent_value.unsqueeze(0))))
 
         return prediction[0]
+
+
